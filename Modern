@@ -1,0 +1,297 @@
+-- Script GUI Modern
+-- Letakkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- ** Bagian 1: Membuat ScreenGui dan Frame Utama **
+local MainScreenGui = Instance.new("ScreenGui")
+MainScreenGui.Name = "ModernFishItGUI"
+MainScreenGui.Enabled = true -- Biarkan tombol selalu terlihat
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 500, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Visible = false -- Awalnya tidak terlihat
+MainFrame.Parent = MainScreenGui
+
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 12)
+FrameCorner.Parent = MainFrame
+
+-- ** Bagian 2: Membuat Tombol Toggle (seperti gambar 2) **
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+ToggleButton.Position = UDim2.new(0.02, 0, 0.5, -30)
+ToggleButton.AnchorPoint = Vector2.new(0, 0.5)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Text = ""
+ToggleButton.Parent = MainScreenGui
+
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 10)
+ButtonCorner.Parent = ToggleButton
+
+local ButtonStroke = Instance.new("UIStroke")
+ButtonStroke.Color = Color3.fromRGB(0, 120, 255)
+ButtonStroke.Thickness = 2
+ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ButtonStroke.Parent = ToggleButton
+
+local NinjaIcon = Instance.new("ImageLabel")
+NinjaIcon.Name = "NinjaIcon"
+NinjaIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+NinjaIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+NinjaIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+NinjaIcon.Image = "rbxassetid://6031267675" -- Ganti dengan ID ikon ninja kamu
+NinjaIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+NinjaIcon.BackgroundTransparency = 1
+NinjaIcon.Parent = ToggleButton
+
+-- ** Bagian 3: Layout GUI Utama **
+local UILayout = Instance.new("UIListLayout")
+UILayout.FillDirection = Enum.FillDirection.Vertical
+UILayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UILayout.Padding = UDim.new(0, 10)
+UILayout.Parent = MainFrame
+
+-- Header
+local HeaderFrame = Instance.new("Frame")
+HeaderFrame.Name = "HeaderFrame"
+HeaderFrame.Size = UDim2.new(1, 0, 0, 50)
+HeaderFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+HeaderFrame.Parent = MainFrame
+
+local HeaderLayout = Instance.new("UIListLayout")
+HeaderLayout.FillDirection = Enum.FillDirection.Horizontal
+HeaderLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+HeaderLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+HeaderLayout.Padding = UDim.new(0, 10)
+HeaderLayout.Parent = HeaderFrame
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Size = UDim2.new(0, 150, 1, 0)
+TitleLabel.Text = "Fish It"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextSize = 24
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Parent = HeaderFrame
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Size = UDim2.new(0, 70, 0, 25)
+StatusLabel.Text = "STABLE"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.TextSize = 14
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+StatusLabel.BackgroundTransparency = 0
+StatusLabel.Parent = HeaderFrame
+
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(1, 0)
+StatusCorner.Parent = StatusLabel
+
+-- Spacer untuk Push Tombol ke Kanan
+local Spacer = Instance.new("Frame")
+Spacer.Name = "Spacer"
+Spacer.Size = UDim2.new(1, -250, 1, 0)
+Spacer.BackgroundTransparency = 1
+Spacer.Parent = HeaderFrame
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 20
+CloseButton.BackgroundTransparency = 1
+CloseButton.Parent = HeaderFrame
+
+-- Content Frame: Sidebar dan Content Area
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Size = UDim2.new(1, 0, 1, -50) -- Mengisi sisa ruang
+ContentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ContentFrame.BorderSizePixel = 0
+ContentFrame.Parent = MainFrame
+
+local ContentLayout = Instance.new("UIListLayout")
+ContentLayout.FillDirection = Enum.FillDirection.Horizontal
+ContentLayout.Parent = ContentFrame
+
+-- Sidebar
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Size = UDim2.new(0.3, 0, 1, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = ContentFrame
+
+local SidebarLayout = Instance.new("UIListLayout")
+SidebarLayout.FillDirection = Enum.FillDirection.Vertical
+SidebarLayout.Padding = UDim.new(0, 5)
+SidebarLayout.Parent = Sidebar
+
+local function createMenuItem(name, iconId)
+    local ItemButton = Instance.new("TextButton")
+    ItemButton.Name = name .. "Button"
+    ItemButton.Size = UDim2.new(1, 0, 0, 40)
+    ItemButton.Text = ""
+    ItemButton.BackgroundTransparency = 1
+    ItemButton.Parent = Sidebar
+
+    local ItemLayout = Instance.new("UIListLayout")
+    ItemLayout.FillDirection = Enum.FillDirection.Horizontal
+    ItemLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    ItemLayout.Padding = UDim.new(0, 10)
+    ItemLayout.Parent = ItemButton
+
+    local Icon = Instance.new("ImageLabel")
+    Icon.Name = "Icon"
+    Icon.Size = UDim2.new(0, 24, 0, 24)
+    Icon.Image = iconId
+    Icon.ImageColor3 = Color3.fromRGB(200, 200, 200)
+    Icon.BackgroundTransparency = 1
+    Icon.Parent = ItemButton
+
+    local Text = Instance.new("TextLabel")
+    Text.Name = "Text"
+    Text.Size = UDim2.new(1, -40, 1, 0)
+    Text.Text = name
+    Text.TextColor3 = Color3.fromRGB(200, 200, 200)
+    Text.Font = Enum.Font.SourceSansSemibold
+    Text.TextSize = 16
+    Text.BackgroundTransparency = 1
+    Text.TextXAlignment = Enum.TextXAlignment.Left
+    Text.Parent = ItemButton
+
+    ItemButton.MouseEnter:Connect(function()
+        ItemButton.BackgroundTransparency = 0.8
+        ItemButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    end)
+    ItemButton.MouseLeave:Connect(function()
+        ItemButton.BackgroundTransparency = 1
+    end)
+
+    return ItemButton
+end
+
+createMenuItem("Home", "rbxassetid://3926305904")
+createMenuItem("Auto Fish", "rbxassetid://4630327376")
+createMenuItem("Player", "rbxassetid://3926307135")
+createMenuItem("Utility", "rbxassetid://3926307270")
+createMenuItem("Settings", "rbxassetid://3926307379")
+
+-- Profile Area
+local ProfileFrame = Instance.new("Frame")
+ProfileFrame.Name = "ProfileFrame"
+ProfileFrame.Size = UDim2.new(1, 0, 0, 60)
+ProfileFrame.Position = UDim2.new(0, 0, 1, -60)
+ProfileFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ProfileFrame.BorderSizePixel = 0
+ProfileFrame.Parent = Sidebar
+
+local ProfileLayout = Instance.new("UIListLayout")
+ProfileLayout.FillDirection = Enum.FillDirection.Horizontal
+ProfileLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+ProfileLayout.Padding = UDim.new(0, 10)
+ProfileLayout.Parent = ProfileFrame
+
+local ProfileIcon = Instance.new("ImageLabel")
+ProfileIcon.Name = "ProfileIcon"
+ProfileIcon.Size = UDim2.new(0, 40, 0, 40)
+ProfileIcon.Image = "rbxassetid://1347072049" -- Placeholder user icon
+ProfileIcon.BackgroundTransparency = 1
+ProfileIcon.Parent = ProfileFrame
+
+local NameTagFrame = Instance.new("Frame")
+NameTagFrame.Name = "NameTagFrame"
+NameTagFrame.Size = UDim2.new(1, -50, 1, 0)
+NameTagFrame.BackgroundTransparency = 1
+NameTagFrame.Parent = ProfileFrame
+
+local NameTagLayout = Instance.new("UIListLayout")
+NameTagLayout.FillDirection = Enum.FillDirection.Vertical
+NameTagLayout.Parent = NameTagFrame
+
+local NameLabel = Instance.new("TextLabel")
+NameLabel.Name = "NameLabel"
+NameLabel.Size = UDim2.new(1, 0, 0, 20)
+NameLabel.Text = LocalPlayer.Name
+NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+NameLabel.Font = Enum.Font.SourceSansSemibold
+NameLabel.TextSize = 16
+NameLabel.BackgroundTransparency = 1
+NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+NameLabel.Parent = NameTagFrame
+
+local TagLabel = Instance.new("TextLabel")
+TagLabel.Name = "TagLabel"
+TagLabel.Size = UDim2.new(1, 0, 0, 20)
+TagLabel.Text = "@" .. LocalPlayer.Name:gsub(" ", ""):lower()
+TagLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+TagLabel.Font = Enum.Font.SourceSansLight
+TagLabel.TextSize = 14
+TagLabel.BackgroundTransparency = 1
+TagLabel.TextXAlignment = Enum.TextXAlignment.Left
+TagLabel.Parent = NameTagFrame
+
+-- Main Content Area
+local MainContentArea = Instance.new("Frame")
+MainContentArea.Name = "MainContentArea"
+MainContentArea.Size = UDim2.new(0.7, 0, 1, 0)
+MainContentArea.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainContentArea.BorderSizePixel = 0
+MainContentArea.Parent = ContentFrame
+
+-- ** Bagian 4: Logika Tombol dan Animasi **
+local TweenInfo = TweenInfo.new(
+    0.3, -- Durasi
+    Enum.EasingStyle.Quint,
+    Enum.EasingDirection.Out,
+    0,
+    false,
+    0
+)
+
+local function tweenGUI(visible)
+    local targetPosition = UDim2.new(0.5, -250, 0.5, -175)
+    local startPosition = UDim2.new(0.5, -250, -0.5, 0)
+
+    if not visible then
+        targetPosition = UDim2.new(0.5, -250, -0.5, 0)
+        startPosition = UDim2.new(0.5, -250, 0.5, -175)
+    end
+
+    MainFrame.Position = startPosition
+    MainFrame.Visible = true
+
+    local tween = TweenService:Create(MainFrame, TweenInfo, {Position = targetPosition})
+    tween:Play()
+    if not visible then
+        tween.Completed:Wait()
+        MainFrame.Visible = false
+    end
+end
+
+ToggleButton.MouseButton1Click:Connect(function()
+    tweenGUI(not MainFrame.Visible)
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    tweenGUI(false)
+end)
+
+MainScreenGui.Parent = PlayerGui
