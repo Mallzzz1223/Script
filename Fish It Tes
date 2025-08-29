@@ -1,0 +1,63 @@
+-- Script "Fish It" untuk Delta Executor
+-- Dibuat oleh AI Helper
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+
+-- Konfigurasi
+local fishing_rod_name = "Fishing Rod" -- Ubah nama ini jika perlu
+local fishing_spot_name = "Fishing Spot" -- Sesuaikan dengan nama tempat memancing di game
+local wait_time = 5 -- Waktu tunggu (dalam detik) sebelum memancing kembali
+
+-- Fungsi untuk menemukan alat pancing
+function findFishingRod()
+    for _, item in ipairs(LocalPlayer.Backpack:GetChildren()) do
+        if item.Name == fishing_rod_name then
+            return item
+        end
+    end
+    for _, item in ipairs(LocalPlayer.Character:GetChildren()) do
+        if item.Name == fishing_rod_name then
+            return item
+        end
+    end
+    return nil
+end
+
+-- Fungsi untuk memancing
+function fish()
+    local rod = findFishingRod()
+    if not rod then
+        print("Alat pancing tidak ditemukan! Pastikan kamu memilikinya di inventory.")
+        return
+    end
+
+    -- Menemukan titik memancing (jika ada)
+    local spot = Workspace:FindFirstChild(fishing_spot_name)
+    if not spot then
+        print("Tempat memancing tidak ditemukan!")
+        -- Kamu bisa tetap mencoba memancing tanpa spot spesifik, tergantung game
+    end
+
+    -- Menggunakan alat pancing
+    -- Kode ini adalah simulasi klik, jadi pastikan game menggunakan mekanisme klik
+    rod:Activate()
+    print("Mulai memancing...")
+
+    -- Tunggu beberapa saat untuk hasil tangkapan
+    wait(wait_time)
+
+    -- Kamu bisa menambahkan logika untuk mengecek apakah ikan sudah tertangkap
+    -- Contoh sederhana: cek apakah ada item baru di inventory
+    -- Ini sangat bergantung pada cara kerja game, jadi mungkin perlu penyesuaian.
+
+    print("Selesai memancing, menunggu siklus berikutnya.")
+end
+
+-- Loop utama
+while true do
+    fish()
+    -- Tunggu beberapa saat sebelum memancing lagi
+    wait(wait_time + math.random(1, 3)) -- Menambahkan waktu acak untuk menghindari deteksi anti-cheat
+end
