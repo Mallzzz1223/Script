@@ -14,7 +14,7 @@ MainScreenGui.Enabled = true -- Biarkan tombol selalu terlihat
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 500, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
+MainFrame.Position = UDim2.new(0.5, -250, 0.55, -175) -- Posisi Y sedikit di bawah
 MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 0
@@ -25,7 +25,7 @@ local FrameCorner = Instance.new("UICorner")
 FrameCorner.CornerRadius = UDim.new(0, 12)
 FrameCorner.Parent = MainFrame
 
--- ** Bagian 2: Membuat Tombol Toggle (seperti gambar 2) **
+-- ** Bagian 2: Membuat Tombol Toggle dengan Logo Baru **
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Size = UDim2.new(0, 60, 0, 60)
@@ -37,7 +37,7 @@ ToggleButton.Text = ""
 ToggleButton.Parent = MainScreenGui
 
 local ButtonCorner = Instance.new("UICorner")
-ButtonCorner.CornerRadius = UDim.new(0, 10)
+ButtonCorner.CornerRadius = UDim.new(1, 0) -- Membuat tombol menjadi bulat
 ButtonCorner.Parent = ToggleButton
 
 local ButtonStroke = Instance.new("UIStroke")
@@ -46,17 +46,18 @@ ButtonStroke.Thickness = 2
 ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ButtonStroke.Parent = ToggleButton
 
-local NinjaIcon = Instance.new("ImageLabel")
-NinjaIcon.Name = "NinjaIcon"
-NinjaIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-NinjaIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
-NinjaIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-NinjaIcon.Image = "rbxassetid://6031267675" -- Ganti dengan ID ikon ninja kamu
-NinjaIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-NinjaIcon.BackgroundTransparency = 1
-NinjaIcon.Parent = ToggleButton
+local NewLogo = Instance.new("ImageLabel")
+NewLogo.Name = "NewLogo"
+NewLogo.Size = UDim2.new(0.6, 0, 0.6, 0)
+NewLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
+NewLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+-- Ganti dengan ID gambar logo baru yang berbentuk "MZ"
+NewLogo.Image = "rbxassetid://18182747185" -- Ganti dengan ID aset yang benar
+NewLogo.ImageColor3 = Color3.fromRGB(255, 255, 255)
+NewLogo.BackgroundTransparency = 1
+NewLogo.Parent = ToggleButton
 
--- ** Bagian 3: Layout GUI Utama **
+-- ** Bagian 3: Layout GUI Utama (Tidak Berubah, Hanya Penyesuaian Posisi) **
 local UILayout = Instance.new("UIListLayout")
 UILayout.FillDirection = Enum.FillDirection.Vertical
 UILayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -267,12 +268,12 @@ local TweenInfo = TweenInfo.new(
 )
 
 local function tweenGUI(visible)
-    local targetPosition = UDim2.new(0.5, -250, 0.5, -175)
-    local startPosition = UDim2.new(0.5, -250, -0.5, 0)
+    local targetPosition = UDim2.new(0.5, -250, 0.55, -175)
+    local startPosition = UDim2.new(0.5, -250, 0, -175)
 
     if not visible then
-        targetPosition = UDim2.new(0.5, -250, -0.5, 0)
-        startPosition = UDim2.new(0.5, -250, 0.5, -175)
+        targetPosition = UDim2.new(0.5, -250, 0, -175)
+        startPosition = UDim2.new(0.5, -250, 0.55, -175)
     end
 
     MainFrame.Position = startPosition
