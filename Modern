@@ -1,13 +1,18 @@
--- Script GUI Sentral & Fungsional untuk Fishing
+-- Script GUI Final untuk Fishing
 -- Tempatkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 -- ** Bagian 1: Pengaturan GUI & Animasi **
-local TweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+local TweenInfo = TweenInfo.new(
+    0.3, -- Durasi
+    Enum.EasingStyle.Quint,
+    Enum.EasingDirection.Out
+)
 
 local function tweenGUI(guiFrame, visible)
     local targetPosition = visible and UDim2.new(0.5, -125, 0.5, -175) or UDim2.new(0.5, -125, -0.5, 0)
@@ -191,13 +196,13 @@ ToggleButton.MouseButton1Click:Connect(function()
     tweenGUI(MainFrame, not MainFrame.Visible)
 end)
 
-**MinimizeButton.MouseButton1Click:Connect(function()
+MinimizeButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
-end)**
+end)
 
-**CloseButton.MouseButton1Click:Connect(function()
+CloseButton.MouseButton1Click:Connect(function()
     MainScreenGui:Destroy()
-end)**
+end)
 
 local toggles = {
     AutoFish = false,
