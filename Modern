@@ -1,8 +1,9 @@
--- Script GUI Sederhana
+-- Script GUI Final di Tengah Layar
 -- Tempatkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
@@ -41,8 +42,7 @@ ToggleButton.Position = UDim2.new(0.02, 0, 0.5, -30)
 ToggleButton.AnchorPoint = Vector2.new(0, 0.5)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 ToggleButton.BorderSizePixel = 0
--- Gunakan emoji atau karakter khusus sebagai logo teks
-ToggleButton.Text = "🎣" 
+ToggleButton.Text = "🎣"
 ToggleButton.Font = Enum.Font.SourceSansBold
 ToggleButton.TextSize = 30
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -59,7 +59,7 @@ ButtonStroke.Thickness = 2
 ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ButtonStroke.Parent = ToggleButton
 
--- Jendela GUI Utama
+-- Jendela GUI Utama yang Lebih Ramping
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 250, 0, 350)
