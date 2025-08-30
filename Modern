@@ -1,9 +1,8 @@
--- Script GUI Final untuk Fishing
+-- Script GUI Sederhana
 -- Tempatkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
@@ -42,7 +41,12 @@ ToggleButton.Position = UDim2.new(0.02, 0, 0.5, -30)
 ToggleButton.AnchorPoint = Vector2.new(0, 0.5)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 ToggleButton.BorderSizePixel = 0
-ToggleButton.Text = ""
+-- Gunakan emoji atau karakter khusus sebagai logo teks
+ToggleButton.Text = "🎣" 
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 30
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BackgroundTransparency = 0
 ToggleButton.Parent = MainScreenGui
 
 local ButtonCorner = Instance.new("UICorner")
@@ -55,17 +59,7 @@ ButtonStroke.Thickness = 2
 ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ButtonStroke.Parent = ToggleButton
 
-local LogoIcon = Instance.new("ImageLabel")
-LogoIcon.Name = "LogoIcon"
-LogoIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-LogoIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
-LogoIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-LogoIcon.Image = "rbxassetid://18182747185" -- Ganti dengan ID aset logo "MZ" kamu
-LogoIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-LogoIcon.BackgroundTransparency = 1
-LogoIcon.Parent = ToggleButton
-
--- Jendela GUI Utama yang Lebih Ramping
+-- Jendela GUI Utama
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 250, 0, 350)
