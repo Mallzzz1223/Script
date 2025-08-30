@@ -1,0 +1,303 @@
+-- Script GUI Final dengan Fungsionalitas Memancing
+-- Tempatkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- ** Bagian 1: Konfigurasi & Event Game **
+-- MASUKKAN NAMA-NAMA YANG KAMU TEMUKAN DI DALAM GAME DI SINI
+local FISHING_ROD_NAME = "Fishing Rod" -- Ganti nama ini dengan nama alat pancing di game
+local CAST_EVENT_NAME = "CastEvent" -- Ganti dengan nama RemoteEvent untuk melempar pancing
+local REEL_EVENT_NAME = "ReelInEvent" -- Ganti dengan nama RemoteEvent untuk menggulung pancing
+
+local castEvent = ReplicatedStorage:FindFirstChild(CAST_EVENT_NAME)
+local reelEvent = ReplicatedStorage:FindFirstChild(REEL_EVENT_NAME)
+
+if not castEvent or not reelEvent then
+    warn("Event memancing tidak ditemukan. Pastikan kamu sudah memasukkan nama yang benar.")
+end
+
+-- ** Bagian 2: Pengaturan GUI & Animasi (Tidak Berubah) **
+local TweenInfo = TweenInfo.new(
+    0.3,
+    Enum.EasingStyle.Quint,
+    Enum.EasingDirection.Out
+)
+
+local function tweenGUI(guiFrame, visible)
+    local targetPosition = visible and UDim2.new(0.5, -125, 0.5, -175) or UDim2.new(0.5, -125, -0.5, 0)
+    local targetAlpha = visible and 0 or 1
+
+    if visible then
+        guiFrame.Visible = true
+    end
+
+    local tween = TweenService:Create(guiFrame, TweenInfo, {Position = targetPosition, BackgroundTransparency = 1 - targetAlpha})
+    tween:Play()
+    if not visible then
+        tween.Completed:Wait()
+        guiFrame.Visible = false
+    end
+end
+
+-- ** Bagian 3: Membuat GUI Utama & Tombol Toggle (Tidak Berubah) **
+local MainScreenGui = Instance.new("ScreenGui")
+MainScreenGui.Name = "FishItGUI"
+MainScreenGui.Parent = PlayerGui
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+ToggleButton.Position = UDim2.new(0.02, 0, 0.5, -30)
+ToggleButton.AnchorPoint = Vector2.new(0, 0.5)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Text = "🎣"
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 30
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BackgroundTransparency = 0
+ToggleButton.Parent = MainScreenGui
+
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(1, 0)
+ButtonCorner.Parent = ToggleButton
+
+local ButtonStroke = Instance.new("UIStroke")
+ButtonStroke.Color = Color3.fromRGB(0, 120, 255)
+ButtonStroke.Thickness = 2
+ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ButtonStroke.Parent = ToggleButton
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 250, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -175)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Visible = false
+MainFrame.Parent = MainScreenGui
+
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 12)
+FrameCorner.Parent = MainFrame
+
+local HeaderFrame = Instance.new("Frame")
+HeaderFrame.Name = "HeaderFrame"
+HeaderFrame.Size = UDim2.new(1, 0, 0, 50)
+HeaderFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+HeaderFrame.Parent = MainFrame
+
+local HeaderLayout = Instance.new("UIListLayout")
+HeaderLayout.FillDirection = Enum.FillDirection.Horizontal
+HeaderLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+HeaderLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+HeaderLayout.Padding = UDim.new(0, 10)
+HeaderLayout.Parent = HeaderFrame
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Size = UDim2.new(0.6, 0, 1, 0)
+TitleLabel.Text = "Fish It"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextSize = 24
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Parent = HeaderFrame
+
+local HeaderButtonLayout = Instance.new("UIListLayout")
+HeaderButtonLayout.FillDirection = Enum.FillDirection.Horizontal
+HeaderButtonLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+HeaderButtonLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+HeaderButtonLayout.Parent = HeaderFrame
+
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Text = "—"
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.Font = Enum.Font.SourceSansBold
+MinimizeButton.TextSize = 20
+MinimizeButton.BackgroundTransparency = 1
+MinimizeButton.Parent = HeaderButtonLayout
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 20
+CloseButton.BackgroundTransparency = 1
+CloseButton.Parent = HeaderButtonLayout
+
+local MenuFrame = Instance.new("Frame")
+MenuFrame.Name = "MenuFrame"
+MenuFrame.Size = UDim2.new(1, 0, 1, -50)
+MenuFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MenuFrame.BorderSizePixel = 0
+MenuFrame.Parent = MainFrame
+
+local MenuLayout = Instance.new("UIListLayout")
+MenuLayout.FillDirection = Enum.FillDirection.Vertical
+MenuLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+MenuLayout.Padding = UDim.new(0, 5)
+MenuLayout.Parent = MenuFrame
+
+-- ** Bagian 4: Fitur & Fungsionalitas (Diperbarui) **
+local function createFeatureToggle(name)
+    local Button = Instance.new("TextButton")
+    Button.Name = name .. "Button"
+    Button.Size = UDim2.new(0.9, 0, 0, 40)
+    Button.Text = name
+    Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+    Button.Font = Enum.Font.SourceSansSemibold
+    Button.TextSize = 16
+    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Button.Parent = MenuFrame
+
+    local ButtonCorner = Instance.new("UICorner")
+    ButtonCorner.CornerRadius = UDim.new(0, 8)
+    ButtonCorner.Parent = Button
+
+    Button.MouseEnter:Connect(function()
+        Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end)
+    Button.MouseLeave:Connect(function()
+        Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    end)
+
+    return Button
+end
+
+local autoFishBtn = createFeatureToggle("Auto Fish")
+local autoClickerBtn = createFeatureToggle("Auto Clicker")
+local alwaysPerfectBtn = createFeatureToggle("Always Perfect")
+local targetFishBtn = createFeatureToggle("Target Fish")
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Size = UDim2.new(0.9, 0, 0, 30)
+StatusLabel.Text = "STABLE"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.TextSize = 16
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+StatusLabel.BackgroundTransparency = 0
+StatusLabel.Parent = MenuFrame
+
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(1, 0)
+StatusCorner.Parent = StatusLabel
+
+-- ** Logika Fitur Memancing **
+local toggles = {
+    AutoFish = false,
+    AutoClicker = false,
+    AlwaysPerfect = false
+}
+
+local function updateButtonState(button, state)
+    if state then
+        button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        button.TextColor3 = Color3.fromRGB(200, 200, 200)
+    end
+end
+
+-- Fungsi inti untuk memancing otomatis
+local function findFishingRod()
+    local rod = LocalPlayer.Backpack:FindFirstChild(FISHING_ROD_NAME)
+    if not rod then
+        rod = LocalPlayer.Character:FindFirstChild(FISHING_ROD_NAME)
+    end
+    return rod
+end
+
+local autoFishLoop = nil
+local function startAutoFish()
+    if autoFishLoop then return end
+    autoFishLoop = coroutine.wrap(function()
+        while toggles.AutoFish do
+            local rod = findFishingRod()
+            if rod and castEvent then
+                -- Langkah 1: Lempar pancingan
+                rod.Parent = LocalPlayer.Character
+                castEvent:FireServer()
+                print("Melempar pancingan...")
+
+                wait(math.random(5, 10)) -- Tunggu ikan menggigit
+                
+                if toggles.AlwaysPerfect and reelEvent then
+                    -- Langkah 2: Tarik pancingan (Always Perfect)
+                    reelEvent:FireServer()
+                    print("Menarik pancing dengan sempurna!")
+                end
+            end
+            wait(2) -- Jeda sebelum siklus berikutnya
+        end
+        autoFishLoop = nil
+    end)
+    autoFishLoop()
+end
+
+-- Hubungkan tombol ke fungsionalitas
+autoFishBtn.MouseButton1Click:Connect(function()
+    toggles.AutoFish = not toggles.AutoFish
+    updateButtonState(autoFishBtn, toggles.AutoFish)
+    print("Auto Fish: " .. (toggles.AutoFish and "ON" or "OFF"))
+    if toggles.AutoFish then
+        startAutoFish()
+    end
+end)
+
+autoClickerBtn.MouseButton1Click:Connect(function()
+    toggles.AutoClicker = not toggles.AutoClicker
+    updateButtonState(autoClickerBtn, toggles.AutoClicker)
+    print("Auto Clicker: " .. (toggles.AutoClicker and "ON" or "OFF"))
+    -- Logika auto clicker biasanya berjalan di luar loop utama
+end)
+
+alwaysPerfectBtn.MouseButton1Click:Connect(function()
+    toggles.AlwaysPerfect = not toggles.AlwaysPerfect
+    updateButtonState(alwaysPerfectBtn, toggles.AlwaysPerfect)
+    print("Always Perfect: " .. (toggles.AlwaysPerfect and "ON" or "OFF"))
+end)
+
+targetFishBtn.MouseButton1Click:Connect(function()
+    print("Fitur 'Target Fish' akan muncul di sini.")
+end)
+
+ToggleButton.MouseButton1Click:Connect(function()
+    tweenGUI(MainFrame, not MainFrame.Visible)
+end)
+
+MinimizeButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainScreenGui:Destroy()
+end)
+
+for _, obj in ipairs(MainScreenGui:GetDescendants()) do
+    if obj:IsA("Frame") or obj:IsA("TextButton") or obj:IsA("ImageLabel") then
+        local corner = obj:FindFirstChildOfClass("UICorner")
+        if not corner then
+            corner = Instance.new("UICorner")
+            corner.Parent = obj
+        end
+        if obj.Name ~= "ToggleButton" and obj.Name ~= "StatusLabel" then
+            corner.CornerRadius = UDim.new(0, 8)
+        end
+    end
+end
+
+MainScreenGui.Parent = PlayerGui
