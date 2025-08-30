@@ -1,18 +1,17 @@
--- Script GUI Terpadu untuk Fishing
+-- Script GUI Sentral & Fungsional untuk Fishing
 -- Tempatkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- ** Bagian 1: Pengaturan dan Animasi GUI **
+-- ** Bagian 1: Pengaturan GUI & Animasi **
 local TweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
 local function tweenGUI(guiFrame, visible)
-    local targetAlpha = visible and 1 or 0
-    local targetPosition = visible and UDim2.new(0.5, -250, 0.55, -175) or UDim2.new(0.5, -250, 0, -175)
+    local targetPosition = visible and UDim2.new(0.5, -125, 0.5, -175) or UDim2.new(0.5, -125, -0.5, 0)
+    local targetAlpha = visible and 0 or 1
 
     if visible then
         guiFrame.Visible = true
@@ -26,26 +25,11 @@ local function tweenGUI(guiFrame, visible)
     end
 end
 
--- ** Bagian 2: Membuat GUI Utama dan Tombol Toggle **
+-- ** Bagian 2: Membuat GUI Utama & Tombol Toggle **
 local MainScreenGui = Instance.new("ScreenGui")
 MainScreenGui.Name = "FishItGUI"
 MainScreenGui.Parent = PlayerGui
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 500, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -250, 0.55, -175)
-MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.BorderSizePixel = 0
-MainFrame.Visible = false
-MainFrame.Parent = MainScreenGui
-
-local FrameCorner = Instance.new("UICorner")
-FrameCorner.CornerRadius = UDim.new(0, 12)
-FrameCorner.Parent = MainFrame
-
--- Tombol Toggle di pojok kiri
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Size = UDim2.new(0, 60, 0, 60)
@@ -76,242 +60,182 @@ LogoIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
 LogoIcon.BackgroundTransparency = 1
 LogoIcon.Parent = ToggleButton
 
--- ** Bagian 3: Konten Utama GUI **
-local ContentLayout = Instance.new("UIListLayout")
-ContentLayout.FillDirection = Enum.FillDirection.Horizontal
-ContentLayout.Parent = MainFrame
+-- Jendela GUI Utama yang Lebih Ramping
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 250, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -175)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Visible = false
+MainFrame.Parent = MainScreenGui
 
-local Sidebar = Instance.new("Frame")
-Sidebar.Name = "Sidebar"
-Sidebar.Size = UDim2.new(0.35, 0, 1, 0)
-Sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Sidebar.BorderSizePixel = 0
-Sidebar.Parent = MainFrame
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 12)
+FrameCorner.Parent = MainFrame
 
-local SidebarLayout = Instance.new("UIListLayout")
-SidebarLayout.FillDirection = Enum.FillDirection.Vertical
-SidebarLayout.Padding = UDim.new(0, 5)
-SidebarLayout.Parent = Sidebar
+-- ** Bagian 3: Konten GUI (Header & Menu) **
+local HeaderFrame = Instance.new("Frame")
+HeaderFrame.Name = "HeaderFrame"
+HeaderFrame.Size = UDim2.new(1, 0, 0, 50)
+HeaderFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+HeaderFrame.Parent = MainFrame
 
-local TopMenuFrame = Instance.new("Frame")
-TopMenuFrame.Name = "TopMenuFrame"
-TopMenuFrame.Size = UDim2.new(1, 0, 0.8, 0)
-TopMenuFrame.BackgroundTransparency = 1
-TopMenuFrame.Parent = Sidebar
+local HeaderLayout = Instance.new("UIListLayout")
+HeaderLayout.FillDirection = Enum.FillDirection.Horizontal
+HeaderLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+HeaderLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+HeaderLayout.Padding = UDim.new(0, 10)
+HeaderLayout.Parent = HeaderFrame
 
-local TopMenuLayout = Instance.new("UIListLayout")
-TopMenuLayout.FillDirection = Enum.FillDirection.Vertical
-TopMenuLayout.Padding = UDim.new(0, 5)
-TopMenuLayout.Parent = TopMenuFrame
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Size = UDim2.new(0.6, 0, 1, 0)
+TitleLabel.Text = "Fish It"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextSize = 24
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Parent = HeaderFrame
 
-local function createMenuItem(name, iconId)
-    local ItemButton = Instance.new("TextButton")
-    ItemButton.Name = name .. "Button"
-    ItemButton.Size = UDim2.new(1, 0, 0, 40)
-    ItemButton.Text = ""
-    ItemButton.BackgroundTransparency = 1
-    ItemButton.Parent = TopMenuFrame
+local HeaderButtonLayout = Instance.new("UIListLayout")
+HeaderButtonLayout.FillDirection = Enum.FillDirection.Horizontal
+HeaderButtonLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+HeaderButtonLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+HeaderButtonLayout.Parent = HeaderFrame
 
-    local ItemLayout = Instance.new("UIListLayout")
-    ItemLayout.FillDirection = Enum.FillDirection.Horizontal
-    ItemLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-    ItemLayout.Padding = UDim.new(0, 10)
-    ItemLayout.Parent = ItemButton
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Text = "—"
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.Font = Enum.Font.SourceSansBold
+MinimizeButton.TextSize = 20
+MinimizeButton.BackgroundTransparency = 1
+MinimizeButton.Parent = HeaderButtonLayout
 
-    local Icon = Instance.new("ImageLabel")
-    Icon.Name = "Icon"
-    Icon.Size = UDim2.new(0, 24, 0, 24)
-    Icon.Image = iconId
-    Icon.ImageColor3 = Color3.fromRGB(200, 200, 200)
-    Icon.BackgroundTransparency = 1
-    Icon.Parent = ItemButton
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 20
+CloseButton.BackgroundTransparency = 1
+CloseButton.Parent = HeaderButtonLayout
 
-    local Text = Instance.new("TextLabel")
-    Text.Name = "Text"
-    Text.Size = UDim2.new(1, -40, 1, 0)
-    Text.Text = name
-    Text.TextColor3 = Color3.fromRGB(200, 200, 200)
-    Text.Font = Enum.Font.SourceSansSemibold
-    Text.TextSize = 16
-    Text.BackgroundTransparency = 1
-    Text.TextXAlignment = Enum.TextXAlignment.Left
-    Text.Parent = ItemButton
+-- Area Menu Utama
+local MenuFrame = Instance.new("Frame")
+MenuFrame.Name = "MenuFrame"
+MenuFrame.Size = UDim2.new(1, 0, 1, -50)
+MenuFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MenuFrame.BorderSizePixel = 0
+MenuFrame.Parent = MainFrame
 
-    ItemButton.MouseEnter:Connect(function()
-        ItemButton.BackgroundTransparency = 0.8
-        ItemButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+local MenuLayout = Instance.new("UIListLayout")
+MenuLayout.FillDirection = Enum.FillDirection.Vertical
+MenuLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+MenuLayout.Padding = UDim.new(0, 5)
+MenuLayout.Parent = MenuFrame
+
+-- ** Bagian 4: Fitur & Fungsionalitas **
+local function createFeatureToggle(name, iconId)
+    local Button = Instance.new("TextButton")
+    Button.Name = name .. "Button"
+    Button.Size = UDim2.new(0.9, 0, 0, 40)
+    Button.Text = name
+    Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+    Button.Font = Enum.Font.SourceSansSemibold
+    Button.TextSize = 16
+    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Button.Parent = MenuFrame
+
+    local ButtonCorner = Instance.new("UICorner")
+    ButtonCorner.CornerRadius = UDim.new(0, 8)
+    ButtonCorner.Parent = Button
+
+    Button.MouseEnter:Connect(function()
+        Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     end)
-    ItemButton.MouseLeave:Connect(function()
-        ItemButton.BackgroundTransparency = 1
+    Button.MouseLeave:Connect(function()
+        Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     end)
 
-    return ItemButton
+    return Button
 end
 
-local autoFishBtn = createMenuItem("Auto Fish", "rbxassetid://4630327376")
-local playerBtn = createMenuItem("Player", "rbxassetid://3926307135")
-local utilityBtn = createMenuItem("Utility", "rbxassetid://3926307270")
-local settingsBtn = createMenuItem("Settings", "rbxassetid://3926307379")
+local autoFishBtn = createFeatureToggle("Auto Fish", nil)
+local autoClickerBtn = createFeatureToggle("Auto Clicker", nil)
+local alwaysPerfectBtn = createFeatureToggle("Always Perfect", nil)
+local targetFishBtn = createFeatureToggle("Target Fish", nil)
 
--- Profile Area di Sidebar
-local ProfileFrame = Instance.new("Frame")
-ProfileFrame.Name = "ProfileFrame"
-ProfileFrame.Size = UDim2.new(1, 0, 0, 60)
-ProfileFrame.Position = UDim2.new(0, 0, 1, -60)
-ProfileFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-ProfileFrame.BorderSizePixel = 0
-ProfileFrame.Parent = Sidebar
-
-local ProfileLayout = Instance.new("UIListLayout")
-ProfileLayout.FillDirection = Enum.FillDirection.Horizontal
-ProfileLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-ProfileLayout.Padding = UDim.new(0, 10)
-ProfileLayout.Parent = ProfileFrame
-
-local ProfileIcon = Instance.new("ImageLabel")
-ProfileIcon.Name = "ProfileIcon"
-ProfileIcon.Size = UDim2.new(0, 40, 0, 40)
-ProfileIcon.Image = "rbxassetid://1347072049"
-ProfileIcon.BackgroundTransparency = 1
-ProfileIcon.Parent = ProfileFrame
-
-local NameTagFrame = Instance.new("Frame")
-NameTagFrame.Name = "NameTagFrame"
-NameTagFrame.Size = UDim2.new(1, -50, 1, 0)
-NameTagFrame.BackgroundTransparency = 1
-NameTagFrame.Parent = ProfileFrame
-
-local NameTagLayout = Instance.new("UIListLayout")
-NameTagLayout.FillDirection = Enum.FillDirection.Vertical
-NameTagLayout.Parent = NameTagFrame
-
-local NameLabel = Instance.new("TextLabel")
-NameLabel.Name = "NameLabel"
-NameLabel.Size = UDim2.new(1, 0, 0, 20)
-NameLabel.Text = LocalPlayer.Name
-NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-NameLabel.Font = Enum.Font.SourceSansSemibold
-NameLabel.TextSize = 16
-NameLabel.BackgroundTransparency = 1
-NameLabel.TextXAlignment = Enum.TextXAlignment.Left
-NameLabel.Parent = NameTagFrame
-
-local TagLabel = Instance.new("TextLabel")
-TagLabel.Name = "TagLabel"
-TagLabel.Size = UDim2.new(1, 0, 0, 20)
-TagLabel.Text = "@" .. LocalPlayer.Name:gsub(" ", ""):lower()
-TagLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-TagLabel.Font = Enum.Font.SourceSansLight
-TagLabel.TextSize = 14
-TagLabel.BackgroundTransparency = 1
-TagLabel.TextXAlignment = Enum.TextXAlignment.Left
-TagLabel.Parent = NameTagFrame
-
--- Area Konten Utama
-local MainContentArea = Instance.new("Frame")
-MainContentArea.Name = "MainContentArea"
-MainContentArea.Size = UDim2.new(0.65, 0, 1, 0)
-MainContentArea.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainContentArea.BorderSizePixel = 0
-MainContentArea.Parent = MainFrame
-
--- ** Bagian 4: Footer GUI (Status & Tombol Memancing) **
-local FooterFrame = Instance.new("Frame")
-FooterFrame.Name = "FooterFrame"
-FooterFrame.Size = UDim2.new(1, 0, 0, 60)
-FooterFrame.Position = UDim2.new(0, 0, 1, -60)
-FooterFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-FooterFrame.BorderSizePixel = 0
-FooterFrame.Parent = MainFrame
-
-local FooterLayout = Instance.new("UIListLayout")
-FooterLayout.FillDirection = Enum.FillDirection.Horizontal
-FooterLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-FooterLayout.Padding = UDim.new(0, 10)
-FooterLayout.Parent = FooterFrame
-
+-- Label Status
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Name = "StatusLabel"
-StatusLabel.Size = UDim2.new(0, 70, 0, 25)
+StatusLabel.Size = UDim2.new(0.9, 0, 0, 30)
 StatusLabel.Text = "STABLE"
 StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 StatusLabel.Font = Enum.Font.SourceSansBold
-StatusLabel.TextSize = 14
+StatusLabel.TextSize = 16
 StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
 StatusLabel.BackgroundTransparency = 0
-StatusLabel.Parent = FooterFrame
+StatusLabel.Parent = MenuFrame
 
 local StatusCorner = Instance.new("UICorner")
 StatusCorner.CornerRadius = UDim.new(1, 0)
 StatusCorner.Parent = StatusLabel
 
-local TargetFishLabel = Instance.new("TextLabel")
-TargetFishLabel.Name = "TargetFishLabel"
-TargetFishLabel.Size = UDim2.new(0.4, 0, 1, 0)
-TargetFishLabel.Text = "Ikan Malaikat Api" -- Placeholder nama ikan
-TargetFishLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TargetFishLabel.Font = Enum.Font.SourceSansBold
-TargetFishLabel.TextSize = 16
-TargetFishLabel.BackgroundTransparency = 1
-TargetFishLabel.Parent = FooterFrame
-
-local FishImage = Instance.new("ImageLabel")
-FishImage.Name = "FishImage"
-FishImage.Size = UDim2.new(0, 50, 0, 50)
-FishImage.Image = "rbxassetid://18182747185" -- Placeholder gambar ikan
-FishImage.BackgroundTransparency = 1
-FishImage.Parent = FooterFrame
-
-local MemancingButton = Instance.new("TextButton")
-MemancingButton.Name = "MemancingButton"
-MemancingButton.Size = UDim2.new(0.3, 0, 0, 40)
-MemancingButton.Text = "Memancing"
-MemancingButton.Font = Enum.Font.SourceSansBold
-MemancingButton.TextSize = 16
-MemancingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MemancingButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-MemancingButton.Parent = FooterFrame
-
-local MemancingCorner = Instance.new("UICorner")
-MemancingCorner.CornerRadius = UDim.new(0, 8)
-MemancingCorner.Parent = MemancingButton
-
--- ** Bagian 5: Logika Fungsionalitas **
-local autoFishEnabled = false
-local autoClickerEnabled = false
-
+-- Logika Interaksi
 ToggleButton.MouseButton1Click:Connect(function()
     tweenGUI(MainFrame, not MainFrame.Visible)
 end)
 
-MemancingButton.MouseButton1Click:Connect(function()
-    autoFishEnabled = not autoFishEnabled
-    if autoFishEnabled then
-        MemancingButton.Text = "Stop Memancing"
-        MemancingButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-        print("Mulai memancing otomatis...")
+**MinimizeButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)**
+
+**CloseButton.MouseButton1Click:Connect(function()
+    MainScreenGui:Destroy()
+end)**
+
+local toggles = {
+    AutoFish = false,
+    AutoClicker = false,
+    AlwaysPerfect = false
+}
+
+local function updateButtonState(button, state)
+    if state then
+        button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
     else
-        MemancingButton.Text = "Memancing"
-        MemancingButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-        print("Berhenti memancing otomatis.")
+        button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        button.TextColor3 = Color3.fromRGB(200, 200, 200)
     end
+end
+
+autoFishBtn.MouseButton1Click:Connect(function()
+    toggles.AutoFish = not toggles.AutoFish
+    updateButtonState(autoFishBtn, toggles.AutoFish)
+    print("Auto Fish: " .. (toggles.AutoFish and "ON" or "OFF"))
 end)
 
--- Logika tambahan untuk Always Perfect dan Auto Clicker akan diletakkan di sini.
--- Misalnya, dalam loop game atau saat event tertentu terdeteksi.
--- Perlu diketahui, logika ini sangat bergantung pada cara kerja game memancing yang spesifik.
--- Contoh sederhana untuk auto-cast:
--- local castLoop = nil
--- if autoFishEnabled and not castLoop then
---     castLoop = coroutine.wrap(function()
---         while autoFishEnabled do
---             -- Kode untuk melempar pancing
---             -- Kode untuk menunggu pancing digigit
---             -- Kode untuk klik "perfect"
---             wait(5) -- Waktu tunggu
---         end
---     end)()
--- end
+autoClickerBtn.MouseButton1Click:Connect(function()
+    toggles.AutoClicker = not toggles.AutoClicker
+    updateButtonState(autoClickerBtn, toggles.AutoClicker)
+    print("Auto Clicker: " .. (toggles.AutoClicker and "ON" or "OFF"))
+end)
+
+alwaysPerfectBtn.MouseButton1Click:Connect(function()
+    toggles.AlwaysPerfect = not toggles.AlwaysPerfect
+    updateButtonState(alwaysPerfectBtn, toggles.AlwaysPerfect)
+    print("Always Perfect: " .. (toggles.AlwaysPerfect and "ON" or "OFF"))
+end)
+
+targetFishBtn.MouseButton1Click:Connect(function()
+    print("Fitur 'Target Fish' akan muncul di sini.")
+end)
 
 -- Perbaikan UI untuk sudut membulat secara universal
 for _, obj in ipairs(MainScreenGui:GetDescendants()) do
@@ -326,3 +250,5 @@ for _, obj in ipairs(MainScreenGui:GetDescendants()) do
         end
     end
 end
+
+MainScreenGui.Parent = PlayerGui
