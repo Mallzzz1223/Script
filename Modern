@@ -1,31 +1,51 @@
--- Script GUI Modern
--- Letakkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
+-- Script GUI Terpadu untuk Fishing
+-- Tempatkan di StarterPlayerScripts atau StarterGui sebagai LocalScript
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- ** Bagian 1: Membuat ScreenGui dan Frame Utama **
+-- ** Bagian 1: Pengaturan dan Animasi GUI **
+local TweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+
+local function tweenGUI(guiFrame, visible)
+    local targetAlpha = visible and 1 or 0
+    local targetPosition = visible and UDim2.new(0.5, -250, 0.55, -175) or UDim2.new(0.5, -250, 0, -175)
+
+    if visible then
+        guiFrame.Visible = true
+    end
+
+    local tween = TweenService:Create(guiFrame, TweenInfo, {Position = targetPosition, BackgroundTransparency = 1 - targetAlpha})
+    tween:Play()
+    if not visible then
+        tween.Completed:Wait()
+        guiFrame.Visible = false
+    end
+end
+
+-- ** Bagian 2: Membuat GUI Utama dan Tombol Toggle **
 local MainScreenGui = Instance.new("ScreenGui")
-MainScreenGui.Name = "ModernFishItGUI"
-MainScreenGui.Enabled = true -- Biarkan tombol selalu terlihat
+MainScreenGui.Name = "FishItGUI"
+MainScreenGui.Parent = PlayerGui
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 500, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -250, 0.55, -175) -- Posisi Y sedikit di bawah
+MainFrame.Position = UDim2.new(0.5, -250, 0.55, -175)
 MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 0
-MainFrame.Visible = false -- Awalnya tidak terlihat
+MainFrame.Visible = false
 MainFrame.Parent = MainScreenGui
 
 local FrameCorner = Instance.new("UICorner")
 FrameCorner.CornerRadius = UDim.new(0, 12)
 FrameCorner.Parent = MainFrame
 
--- ** Bagian 2: Membuat Tombol Toggle dengan Logo Baru **
+-- Tombol Toggle di pojok kiri
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Size = UDim2.new(0, 60, 0, 60)
@@ -37,7 +57,7 @@ ToggleButton.Text = ""
 ToggleButton.Parent = MainScreenGui
 
 local ButtonCorner = Instance.new("UICorner")
-ButtonCorner.CornerRadius = UDim.new(1, 0) -- Membuat tombol menjadi bulat
+ButtonCorner.CornerRadius = UDim.new(1, 0)
 ButtonCorner.Parent = ToggleButton
 
 local ButtonStroke = Instance.new("UIStroke")
@@ -46,104 +66,43 @@ ButtonStroke.Thickness = 2
 ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ButtonStroke.Parent = ToggleButton
 
-local NewLogo = Instance.new("ImageLabel")
-NewLogo.Name = "NewLogo"
-NewLogo.Size = UDim2.new(0.6, 0, 0.6, 0)
-NewLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
-NewLogo.AnchorPoint = Vector2.new(0.5, 0.5)
--- Ganti dengan ID gambar logo baru yang berbentuk "MZ"
-NewLogo.Image = "rbxassetid://18182747185" -- Ganti dengan ID aset yang benar
-NewLogo.ImageColor3 = Color3.fromRGB(255, 255, 255)
-NewLogo.BackgroundTransparency = 1
-NewLogo.Parent = ToggleButton
+local LogoIcon = Instance.new("ImageLabel")
+LogoIcon.Name = "LogoIcon"
+LogoIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+LogoIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+LogoIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+LogoIcon.Image = "rbxassetid://18182747185" -- Ganti dengan ID aset logo "MZ" kamu
+LogoIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+LogoIcon.BackgroundTransparency = 1
+LogoIcon.Parent = ToggleButton
 
--- ** Bagian 3: Layout GUI Utama (Tidak Berubah, Hanya Penyesuaian Posisi) **
-local UILayout = Instance.new("UIListLayout")
-UILayout.FillDirection = Enum.FillDirection.Vertical
-UILayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-UILayout.Padding = UDim.new(0, 10)
-UILayout.Parent = MainFrame
-
--- Header
-local HeaderFrame = Instance.new("Frame")
-HeaderFrame.Name = "HeaderFrame"
-HeaderFrame.Size = UDim2.new(1, 0, 0, 50)
-HeaderFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-HeaderFrame.Parent = MainFrame
-
-local HeaderLayout = Instance.new("UIListLayout")
-HeaderLayout.FillDirection = Enum.FillDirection.Horizontal
-HeaderLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-HeaderLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-HeaderLayout.Padding = UDim.new(0, 10)
-HeaderLayout.Parent = HeaderFrame
-
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Name = "TitleLabel"
-TitleLabel.Size = UDim2.new(0, 150, 1, 0)
-TitleLabel.Text = "Fish It"
-TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TitleLabel.Font = Enum.Font.SourceSansBold
-TitleLabel.TextSize = 24
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Parent = HeaderFrame
-
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Name = "StatusLabel"
-StatusLabel.Size = UDim2.new(0, 70, 0, 25)
-StatusLabel.Text = "STABLE"
-StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-StatusLabel.Font = Enum.Font.SourceSansBold
-StatusLabel.TextSize = 14
-StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-StatusLabel.BackgroundTransparency = 0
-StatusLabel.Parent = HeaderFrame
-
-local StatusCorner = Instance.new("UICorner")
-StatusCorner.CornerRadius = UDim.new(1, 0)
-StatusCorner.Parent = StatusLabel
-
--- Spacer untuk Push Tombol ke Kanan
-local Spacer = Instance.new("Frame")
-Spacer.Name = "Spacer"
-Spacer.Size = UDim2.new(1, -250, 1, 0)
-Spacer.BackgroundTransparency = 1
-Spacer.Parent = HeaderFrame
-
-local CloseButton = Instance.new("TextButton")
-CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.Font = Enum.Font.SourceSansBold
-CloseButton.TextSize = 20
-CloseButton.BackgroundTransparency = 1
-CloseButton.Parent = HeaderFrame
-
--- Content Frame: Sidebar dan Content Area
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, 0, 1, -50) -- Mengisi sisa ruang
-ContentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-ContentFrame.BorderSizePixel = 0
-ContentFrame.Parent = MainFrame
-
+-- ** Bagian 3: Konten Utama GUI **
 local ContentLayout = Instance.new("UIListLayout")
 ContentLayout.FillDirection = Enum.FillDirection.Horizontal
-ContentLayout.Parent = ContentFrame
+ContentLayout.Parent = MainFrame
 
--- Sidebar
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
-Sidebar.Size = UDim2.new(0.3, 0, 1, 0)
+Sidebar.Size = UDim2.new(0.35, 0, 1, 0)
 Sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 Sidebar.BorderSizePixel = 0
-Sidebar.Parent = ContentFrame
+Sidebar.Parent = MainFrame
 
 local SidebarLayout = Instance.new("UIListLayout")
 SidebarLayout.FillDirection = Enum.FillDirection.Vertical
 SidebarLayout.Padding = UDim.new(0, 5)
 SidebarLayout.Parent = Sidebar
+
+local TopMenuFrame = Instance.new("Frame")
+TopMenuFrame.Name = "TopMenuFrame"
+TopMenuFrame.Size = UDim2.new(1, 0, 0.8, 0)
+TopMenuFrame.BackgroundTransparency = 1
+TopMenuFrame.Parent = Sidebar
+
+local TopMenuLayout = Instance.new("UIListLayout")
+TopMenuLayout.FillDirection = Enum.FillDirection.Vertical
+TopMenuLayout.Padding = UDim.new(0, 5)
+TopMenuLayout.Parent = TopMenuFrame
 
 local function createMenuItem(name, iconId)
     local ItemButton = Instance.new("TextButton")
@@ -151,7 +110,7 @@ local function createMenuItem(name, iconId)
     ItemButton.Size = UDim2.new(1, 0, 0, 40)
     ItemButton.Text = ""
     ItemButton.BackgroundTransparency = 1
-    ItemButton.Parent = Sidebar
+    ItemButton.Parent = TopMenuFrame
 
     local ItemLayout = Instance.new("UIListLayout")
     ItemLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -189,13 +148,12 @@ local function createMenuItem(name, iconId)
     return ItemButton
 end
 
-createMenuItem("Home", "rbxassetid://3926305904")
-createMenuItem("Auto Fish", "rbxassetid://4630327376")
-createMenuItem("Player", "rbxassetid://3926307135")
-createMenuItem("Utility", "rbxassetid://3926307270")
-createMenuItem("Settings", "rbxassetid://3926307379")
+local autoFishBtn = createMenuItem("Auto Fish", "rbxassetid://4630327376")
+local playerBtn = createMenuItem("Player", "rbxassetid://3926307135")
+local utilityBtn = createMenuItem("Utility", "rbxassetid://3926307270")
+local settingsBtn = createMenuItem("Settings", "rbxassetid://3926307379")
 
--- Profile Area
+-- Profile Area di Sidebar
 local ProfileFrame = Instance.new("Frame")
 ProfileFrame.Name = "ProfileFrame"
 ProfileFrame.Size = UDim2.new(1, 0, 0, 60)
@@ -213,7 +171,7 @@ ProfileLayout.Parent = ProfileFrame
 local ProfileIcon = Instance.new("ImageLabel")
 ProfileIcon.Name = "ProfileIcon"
 ProfileIcon.Size = UDim2.new(0, 40, 0, 40)
-ProfileIcon.Image = "rbxassetid://1347072049" -- Placeholder user icon
+ProfileIcon.Image = "rbxassetid://1347072049"
 ProfileIcon.BackgroundTransparency = 1
 ProfileIcon.Parent = ProfileFrame
 
@@ -249,50 +207,122 @@ TagLabel.BackgroundTransparency = 1
 TagLabel.TextXAlignment = Enum.TextXAlignment.Left
 TagLabel.Parent = NameTagFrame
 
--- Main Content Area
+-- Area Konten Utama
 local MainContentArea = Instance.new("Frame")
 MainContentArea.Name = "MainContentArea"
-MainContentArea.Size = UDim2.new(0.7, 0, 1, 0)
+MainContentArea.Size = UDim2.new(0.65, 0, 1, 0)
 MainContentArea.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainContentArea.BorderSizePixel = 0
-MainContentArea.Parent = ContentFrame
+MainContentArea.Parent = MainFrame
 
--- ** Bagian 4: Logika Tombol dan Animasi **
-local TweenInfo = TweenInfo.new(
-    0.3, -- Durasi
-    Enum.EasingStyle.Quint,
-    Enum.EasingDirection.Out,
-    0,
-    false,
-    0
-)
+-- ** Bagian 4: Footer GUI (Status & Tombol Memancing) **
+local FooterFrame = Instance.new("Frame")
+FooterFrame.Name = "FooterFrame"
+FooterFrame.Size = UDim2.new(1, 0, 0, 60)
+FooterFrame.Position = UDim2.new(0, 0, 1, -60)
+FooterFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+FooterFrame.BorderSizePixel = 0
+FooterFrame.Parent = MainFrame
 
-local function tweenGUI(visible)
-    local targetPosition = UDim2.new(0.5, -250, 0.55, -175)
-    local startPosition = UDim2.new(0.5, -250, 0, -175)
+local FooterLayout = Instance.new("UIListLayout")
+FooterLayout.FillDirection = Enum.FillDirection.Horizontal
+FooterLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+FooterLayout.Padding = UDim.new(0, 10)
+FooterLayout.Parent = FooterFrame
 
-    if not visible then
-        targetPosition = UDim2.new(0.5, -250, 0, -175)
-        startPosition = UDim2.new(0.5, -250, 0.55, -175)
-    end
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Size = UDim2.new(0, 70, 0, 25)
+StatusLabel.Text = "STABLE"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.TextSize = 14
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+StatusLabel.BackgroundTransparency = 0
+StatusLabel.Parent = FooterFrame
 
-    MainFrame.Position = startPosition
-    MainFrame.Visible = true
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(1, 0)
+StatusCorner.Parent = StatusLabel
 
-    local tween = TweenService:Create(MainFrame, TweenInfo, {Position = targetPosition})
-    tween:Play()
-    if not visible then
-        tween.Completed:Wait()
-        MainFrame.Visible = false
-    end
-end
+local TargetFishLabel = Instance.new("TextLabel")
+TargetFishLabel.Name = "TargetFishLabel"
+TargetFishLabel.Size = UDim2.new(0.4, 0, 1, 0)
+TargetFishLabel.Text = "Ikan Malaikat Api" -- Placeholder nama ikan
+TargetFishLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TargetFishLabel.Font = Enum.Font.SourceSansBold
+TargetFishLabel.TextSize = 16
+TargetFishLabel.BackgroundTransparency = 1
+TargetFishLabel.Parent = FooterFrame
+
+local FishImage = Instance.new("ImageLabel")
+FishImage.Name = "FishImage"
+FishImage.Size = UDim2.new(0, 50, 0, 50)
+FishImage.Image = "rbxassetid://18182747185" -- Placeholder gambar ikan
+FishImage.BackgroundTransparency = 1
+FishImage.Parent = FooterFrame
+
+local MemancingButton = Instance.new("TextButton")
+MemancingButton.Name = "MemancingButton"
+MemancingButton.Size = UDim2.new(0.3, 0, 0, 40)
+MemancingButton.Text = "Memancing"
+MemancingButton.Font = Enum.Font.SourceSansBold
+MemancingButton.TextSize = 16
+MemancingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MemancingButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+MemancingButton.Parent = FooterFrame
+
+local MemancingCorner = Instance.new("UICorner")
+MemancingCorner.CornerRadius = UDim.new(0, 8)
+MemancingCorner.Parent = MemancingButton
+
+-- ** Bagian 5: Logika Fungsionalitas **
+local autoFishEnabled = false
+local autoClickerEnabled = false
 
 ToggleButton.MouseButton1Click:Connect(function()
-    tweenGUI(not MainFrame.Visible)
+    tweenGUI(MainFrame, not MainFrame.Visible)
 end)
 
-CloseButton.MouseButton1Click:Connect(function()
-    tweenGUI(false)
+MemancingButton.MouseButton1Click:Connect(function()
+    autoFishEnabled = not autoFishEnabled
+    if autoFishEnabled then
+        MemancingButton.Text = "Stop Memancing"
+        MemancingButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        print("Mulai memancing otomatis...")
+    else
+        MemancingButton.Text = "Memancing"
+        MemancingButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        print("Berhenti memancing otomatis.")
+    end
 end)
 
-MainScreenGui.Parent = PlayerGui
+-- Logika tambahan untuk Always Perfect dan Auto Clicker akan diletakkan di sini.
+-- Misalnya, dalam loop game atau saat event tertentu terdeteksi.
+-- Perlu diketahui, logika ini sangat bergantung pada cara kerja game memancing yang spesifik.
+-- Contoh sederhana untuk auto-cast:
+-- local castLoop = nil
+-- if autoFishEnabled and not castLoop then
+--     castLoop = coroutine.wrap(function()
+--         while autoFishEnabled do
+--             -- Kode untuk melempar pancing
+--             -- Kode untuk menunggu pancing digigit
+--             -- Kode untuk klik "perfect"
+--             wait(5) -- Waktu tunggu
+--         end
+--     end)()
+-- end
+
+-- Perbaikan UI untuk sudut membulat secara universal
+for _, obj in ipairs(MainScreenGui:GetDescendants()) do
+    if obj:IsA("Frame") or obj:IsA("TextButton") or obj:IsA("ImageLabel") then
+        local corner = obj:FindFirstChildOfClass("UICorner")
+        if not corner then
+            corner = Instance.new("UICorner")
+            corner.Parent = obj
+        end
+        if obj.Name ~= "ToggleButton" and obj.Name ~= "StatusLabel" then
+            corner.CornerRadius = UDim.new(0, 8)
+        end
+    end
+end
